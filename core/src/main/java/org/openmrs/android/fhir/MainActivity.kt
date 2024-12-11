@@ -60,6 +60,7 @@ import kotlinx.coroutines.withContext
 import org.openmrs.android.fhir.auth.AuthStateManager
 import org.openmrs.android.fhir.auth.dataStore
 import org.openmrs.android.fhir.data.PreferenceKeys
+import org.openmrs.android.fhir.data.database.AppDatabase
 import org.openmrs.android.fhir.databinding.ActivityMainBinding
 import org.openmrs.android.fhir.viewmodel.MainActivityViewModel
 import org.openmrs.android.fhir.viewmodel.MainActivityViewModel.Companion.KEY_USER_CHOICE
@@ -80,6 +81,8 @@ class MainActivity : AppCompatActivity() {
   @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
 
   @Inject lateinit var fhirEngine: FhirEngine
+
+  @Inject lateinit var database: AppDatabase
 
   private val viewModel by viewModels<MainActivityViewModel> { viewModelFactory }
 
@@ -303,15 +306,13 @@ class MainActivity : AppCompatActivity() {
     AlertDialog.Builder(this)
       .setTitle(getString(R.string.logout))
       .setMessage(getString(R.string.logout_message))
-      .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
-        lifecycleScope.launch { navigateToLogin() }
-      }
+      .setPositiveButton(getString(R.string.yes)) { dialog, _ -> navigateToLogin() }
       .setNegativeButton(getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
       .setCancelable(false)
       .show()
   }
 
-  private suspend fun navigateToLogin() {
+  private fun navigateToLogin() {
     val intent = Intent(this, LoginActivity::class.java)
     val pendingIntentSuccess =
       PendingIntent.getActivity(
@@ -331,6 +332,7 @@ class MainActivity : AppCompatActivity() {
       .launch(Dispatchers.IO) {
         WorkManager.getInstance(this@MainActivity).cancelAllWork()
         fhirEngine.clearDatabase()
+        database.clearAllTables()
         clearPreferences()
       }
       .invokeOnCompletion {
