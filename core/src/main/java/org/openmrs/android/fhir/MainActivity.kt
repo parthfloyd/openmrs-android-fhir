@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity() {
   private fun onSyncPress() {
     when {
       !isTokenExpired() && viewModel.networkStatus.value -> {
-        viewModel.triggerOneTimeSync(applicationContext)
+        viewModel.triggerOneTimeSync()
         binding.drawer.closeDrawer(GravityCompat.START)
       }
       isTokenExpired() && viewModel.networkStatus.value -> {
@@ -332,7 +332,7 @@ class MainActivity : AppCompatActivity() {
       viewModel.networkStatus.collect { isNetworkAvailable ->
         if (isNetworkAvailable) {
           binding.networkStatusFlag.tvNetworkStatus.text = getString(R.string.online)
-          viewModel.triggerOneTimeSync(applicationContext)
+          viewModel.triggerOneTimeSync()
           monitorTokenExpiry()
         } else {
           binding.networkStatusFlag.tvNetworkStatus.text = getString(R.string.offline)

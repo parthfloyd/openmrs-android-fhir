@@ -108,7 +108,6 @@ constructor(
         val identifiers =
           extractLocationIdentifiersFromQuestionnaireResponse(questionnaireResponse, location)
         identifiers.addAll(createLocationIdentifiers(location))
-        identifiers.add(0, createUnsyncedIdentifier(location))
         patient.identifier = identifiers
       }
       fhirEngine.create(patient)
@@ -134,7 +133,6 @@ constructor(
           Identifier().apply {
             id = generateUuid()
             use = Identifier.IdentifierUse.OFFICIAL
-            value = identifierType?.uuid
             type = CodeableConcept().apply { text = identifierType?.display }
           }
         identifier.addExtension(
@@ -149,25 +147,6 @@ constructor(
       }
     }
     return identifierList
-  }
-
-  private fun createUnsyncedIdentifier(location: Location): Identifier {
-    val identifier =
-      Identifier().apply {
-        id = generateUuid()
-        use = Identifier.IdentifierUse.OFFICIAL
-        value = "unsynced"
-        type = CodeableConcept().apply { text = "unsynced" }
-      }
-    identifier.addExtension(
-      PATIENT_LOCATION_IDENTIFIER_URL,
-      Reference().apply {
-        reference = location.id
-        type = "Location"
-        display = location.name
-      },
-    )
-    return identifier
   }
 
   private fun extractLocationIdentifiersFromQuestionnaireResponse(
