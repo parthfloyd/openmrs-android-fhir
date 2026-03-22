@@ -34,7 +34,7 @@ allprojects {
     gradlePluginPortal()
     maven {
       name = "google-android-fhir"
-      url = uri("https://maven.pkg.github.com/google-admin/android-fhir")
+      url = uri("https://maven.pkg.github.com/ohs-foundation/android-fhir")
       credentials {
         username = localPropertyOrEnv(providers, "gpr.user", "USERNAME")
         password = localPropertyOrEnv(providers, "gpr.key", "TOKEN")
